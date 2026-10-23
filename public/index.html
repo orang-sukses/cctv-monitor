@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CCTV Monitor - Multi-View NVR</title>
+    <meta name="description" content="Software CCTV Monitor Multi-View 3x3 Grid untuk Kamera AliOS Things di Jaringan WiFi dengan Pengaturan Kualitas Gambar YouTube-Style (1080p, 720p, 480p, 360p, 240p).">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="nvr-body">
+    <div class="nvr-app">
+        <!-- Hover Trigger Zone at the very top of screen -->
+        <div class="nvr-hover-trigger" id="nvrHoverTrigger"></div>
+
+        <!-- ============================================================
+             AUTO-HIDE TOP NAVBAR (SLIDES DOWN ON HOVER)
+             ============================================================ -->
+        <div class="nvr-header-wrapper" id="nvrHeaderWrapper">
+            <header class="nvr-header">
+                <!-- Branding -->
+                <div class="nvr-brand">
+                    <div class="nvr-logo">
+                        <span class="nvr-rec-dot"></span>
+                        <span class="nvr-brand-title">CCTV MONITOR</span>
+                    </div>
+                    <div class="nvr-system-info">
+                        <span class="nvr-sys-badge">3x3 MATRIX (9-CH)</span>
+                        <span class="nvr-sys-badge badge-active" id="qualityHeaderBadge">360p ACTIVE</span>
+                        <span class="nvr-time" id="nvrMainClock">--:--:--</span>
+                    </div>
+                </div>
+
+                <!-- 5 HUD Status Metrics (Including Total Speed Internet CCTV) -->
+                <div class="nvr-hud-metrics">
+                    <div class="hud-card hud-alios">
+                        <div class="hud-val" id="countAlios">7</div>
+                        <div class="hud-meta">
+                            <div class="hud-title">Kamera AliOS Things</div>
+                            <div class="hud-sub">AltoBeam CCTV Video Feed</div>
+                        </div>
+                    </div>
+
+                    <div class="hud-card">
+                        <div class="hud-val" id="countTotal">16</div>
+                        <div class="hud-meta">
+                            <div class="hud-title">Total Device Jaringan</div>
+                            <div class="hud-sub">Subnet 192.168.1.x</div>
+                        </div>
+                    </div>
+
+                    <div class="hud-card">
+                        <div class="hud-val text-emerald" id="countOnline">16</div>
+                        <div class="hud-meta">
+                            <div class="hud-title">Perangkat Aktif</div>
+                            <div class="hud-sub text-emerald">Ping Reachable</div>
+                        </div>
+                    </div>
+
+                    <div class="hud-card">
+                        <div class="hud-val text-cyan" id="avgLatency">4.2 <span class="unit">ms</span></div>
+                        <div class="hud-meta">
+                            <div class="hud-title">Rata-rata Ping</div>
+                            <div class="hud-sub" id="lastScanTime">Live OSD Synchronized</div>
+                        </div>
+                    </div>
+
+                    <!-- TOTAL SPEED INTERNET CCTV MONITOR CARD -->
+                    <div class="hud-card hud-speed">
+                        <div class="hud-val text-emerald" id="totalBandwidthSpeed">~2.1 <span class="unit">Mbps</span></div>
+                        <div class="hud-meta">
+                            <div class="hud-title">Total Speed Internet CCTV</div>
+                            <div class="hud-sub" id="speedSubtitle">7 Kamera • Kualitas 360p Hemat Kuota</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Top Controls: YouTube Quality Selector, Channel Tabs, Layout & Actions -->
+                <div class="nvr-top-actions">
+                    <!-- YOUTUBE-STYLE VIDEO QUALITY SETTING -->
+                    <div class="quality-control">
+                        <label for="qualitySelect" class="control-tag">⚙️ Kualitas Video:</label>
+                        <select id="qualitySelect" class="nvr-select quality-select">
+                            <option value="1080p">🌟 1080p Full HD (Maksimal Jelas)</option>
+                            <option value="720p">✨ 720p HD (Jernih &amp; Tajam • Rekomendasi)</option>
+                            <option value="480p">🔹 480p SD (Seimbang)</option>
+                            <option value="360p" selected>🔹 360p (Hemat Kuota • Default Ringan)</option>
+                            <option value="240p">🔹 240p (Ekstrem Hemat Bandwidth)</option>
+                        </select>
+                    </div>
+
+                    <!-- Quick Channel Switcher -->
+                    <div class="channel-tabs">
+                        <button class="ch-tab-btn active" onclick="switchChannelView('all')">
+                            <span>SEMUA 3x3</span>
+                        </button>
+                        <button class="ch-tab-btn" onclick="switchChannelView('192.168.1.4')">
+                            <span>CH-01</span>
+                        </button>
+                        <button class="ch-tab-btn" onclick="switchChannelView('192.168.1.5')">
+                            <span>CH-02</span>
+                        </button>
+                        <button class="ch-tab-btn" onclick="switchChannelView('192.168.1.6')">
+                            <span>CH-03</span>
+                        </button>
+                        <button class="ch-tab-btn" onclick="switchChannelView('192.168.1.7')">
+                            <span>CH-04</span>
+                        </button>
+                        <button class="ch-tab-btn" onclick="switchChannelView('192.168.1.16')">
+                            <span>CH-05</span>
+                        </button>
+                        <button class="ch-tab-btn" onclick="switchChannelView('192.168.1.20')">
+                            <span>CH-06</span>
+                        </button>
+                        <button class="ch-tab-btn" onclick="switchChannelView('192.168.1.13')">
+                            <span>CH-07</span>
+                        </button>
+                    </div>
+
+                    <!-- Layout Selector -->
+                    <div class="layout-controls">
+                        <button class="nvr-btn layout-btn active" id="btnLayout3x3" title="Tampilan Grid 3x3 (9 Channel)">
+                            <span>3x3 Grid</span>
+                        </button>
+                        <button class="nvr-btn layout-btn" id="btnLayoutQuad" title="Tampilan Grid 2x2 (Quad View)">
+                            <span>2x2 Quad</span>
+                        </button>
+                    </div>
+
+                    <div class="nvr-btn-group">
+                        <button id="btnReconnectStreams" class="nvr-btn" title="Refresh/Sambungkan Ulang Stream">
+                            <span>🔄 Refresh</span>
+                        </button>
+                        <button id="btnSnapshotAll" class="nvr-btn" title="Ambil Foto Semua Kamera">
+                            <span>📸 Snapshot</span>
+                        </button>
+                        <button id="btnOpenVLCGuide" class="nvr-btn" title="Buka di VLC / PotPlayer">
+                            <span>📺 RTSP</span>
+                        </button>
+                        <button id="btnFullscreen" class="nvr-btn nvr-btn-icon" title="Layar Penuh (Fullscreen)">
+                            <span id="fullscreenIcon">⛶</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Pull Handle to Reveal Navbar on Hover / Click -->
+            <div class="nvr-header-handle" id="nvrHeaderHandle" title="Arahkan mouse ke sini untuk membuka Pengaturan Kualitas & Menu NVR">
+                <span>▼ PENGATURAN KUALITAS VIDEO (1080p, 720p, ...) &amp; SPEED INTERNET</span>
+            </div>
+        </div>
+
+        <!-- ============================================================
+             MAIN VIEWPORT: 3x3 CCTV MATRIX SCREEN (NO SCROLLBAR)
+             ============================================================ -->
+        <main class="nvr-viewport">
+            <div class="cctv-matrix layout-3x3" id="cctvMatrix">
+                <!-- ================= SLOT 1: CH-01 ================= -->
+                <div class="cctv-box" id="box-192.168.1.4" data-ip="192.168.1.4" data-channel="1">
+                    <div class="cctv-header-osd">
+                        <div class="osd-left">
+                            <span class="cctv-ch-tag">CH-01</span>
+                            <span class="cctv-cam-title" id="name-192.168.1.4">Ruang Utama</span>
+                            <span class="osd-rec-pill"><span class="osd-red-dot"></span>LIVE</span>
+                        </div>
+                    </div>
+                    <div class="cctv-video-container" ondblclick="toggleSoloCamera('192.168.1.4')">
+                        <img id="stream-192.168.1.4" class="cctv-live-feed" src="/api/camera/stream?ip=192.168.1.4&quality=360p" alt="CCTV Feed CH-01" loading="eager">
+                        <div class="cctv-hud-corners"></div>
+                        <div class="cctv-doubleclick-hint">Klik 2x Solo View</div>
+                    </div>
+                    <div class="cctv-footer-osd">
+                        <div class="osd-stats">
+                            <span class="osd-ip">192.168.1.4</span>
+                            <span class="osd-divider">•</span>
+                            <span class="osd-ping" id="ping-192.168.1.4">4.1 ms</span>
+                            <span class="osd-divider">•</span>
+                            <span class="osd-badge quality-badge" id="badge-192.168.1.4">360p</span>
+                        </div>
+                        <div class="osd-actions">
+                            <button class="osd-btn" onclick="downloadSnapshot('192.168.1.4')" title="Ambil Foto HD">📸</button>
+                            <button class="osd-btn" onclick="copyRtspUrl('192.168.1.4')" title="Salin RTSP">🔗</button>
+                            <button class="osd-btn" onclick="openCamConfig('192.168.1.4')" title="Pengaturan">⚙️</button>
+                            <button class="osd-btn btn-solo" onclick="toggleSoloCamera('192.168.1.4')" title="Perbesar Layar">⛶</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ================= SLOT 2: CH-02 ================= -->
+                <div class="cctv-box" id="box-192.168.1.5" data-ip="192.168.1.5" data-channel="2">
+                    <div class="cctv-header-osd">
+                        <div class="osd-left">
+                            <span class="cctv-ch-tag">CH-02</span>
+                            <span class="cctv-cam-title" id="name-192.168.1.5">Pintu Masuk</span>
+                            <span class="osd-rec-pill"><span class="osd-red-dot"></span>LIVE</span>
+                        </div>
+                    </div>
+                    <div class="cctv-video-container" ondblclick="toggleSoloCamera('192.168.1.5')">
+                        <img id="stream-192.168.1.5" class="cctv-live-feed" src="/api/camera/stream?ip=192.168.1.5&quality=360p" alt="CCTV Feed CH-02" loading="eager">
+                        <div class="cctv-hud-corners"></div>
+                        <div class="cctv-doubleclick-hint">Klik 2x Solo View</div>
+                    </div>
+                    <div class="cctv-footer-osd">
+                        <div class="osd-stats">
+                            <span class="osd-ip">192.168.1.5</span>
+                            <span class="osd-divider">•</span>
+                            <span class="osd-ping" id="ping-192.168.1.5">3.8 ms</span>
+                            <span class="osd-divider">•</span>
+                            <span class="osd-badge quality-badge" id="badge-192.168.1.5">360p</span>
+                        </div>
+                        <div class="osd-actions">
+                            <button class="osd-btn" onclick="downloadSnapshot('192.168.1.5')" title="Ambil Foto HD">📸</button>
+                            <button class="osd-btn" onclick="copyRtspUrl('192.168.1.5')" title="Salin RTSP">🔗</button>
+                            <button class="osd-btn" onclick="openCamConfig('192.168.1.5')" title="Pengaturan">⚙️</button>
+                            <button class="osd-btn btn-solo" onclick="toggleSoloCamera('192.168.1.5')" title="Perbesar Layar">⛶</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ================= SLOT 3: CH-03 ================= -->
+                <div class="cctv-box" id="box-192.168.1.6" data-ip="192.168.1.6" data-channel="3">
+                    <div class="cctv-header-osd">
+                        <div class="osd-left">
+                            <span class="cctv-ch-tag">CH-03</span>
+                            <span class="cctv-cam-title" id="name-192.168.1.6">Halaman Depan</span>
+                            <span class="osd-rec-pill"><span class="osd-red-dot"></span>LIVE</span>
+                        </div>
+                    </div>
+                    <div class="cctv-video-container" ondblclick="toggleSoloCamera('192.168.1.6')">
+                        <img id="stream-192.168.1.6" class="cctv-live-feed" src="/api/camera/stream?ip=192.168.1.6&quality=360p" alt="CCTV Feed CH-03" loading="eager">
+                        <div class="cctv-hud-corners"></div>
+                        <div class="cctv-doubleclick-hint">Klik 2x Solo View</div>
+                    </div>
+                    <div class="cctv-footer-osd">
+                        <div class="osd-stats">
+                            <span class="osd-ip">192.168.1.6</span>
+                            <span class="osd-divider">•</span>
+                            <span class="osd-ping" id="ping-192.168.1.6">5.2 ms</span>
+                            <span class="osd-divider">•</span>
+                            <span class="osd-badge quality-badge" id="badge-192.168.1.6">360p</span>
+                        </div>
+                        <div class="osd-actions">
+                            <button class="osd-btn" onclick="downloadSnapshot('192.168.1.6')" title="Ambil Foto HD">📸</button>
+                            <button class="osd-btn" onclick="copyRtspUrl('192.168.1.6')" title="Salin RTSP">🔗</button>
+                            <button class="osd-btn" onclick="openCamConfig('192.168.1.6')" title="Pengaturan">⚙️</button>
+                            <button class="osd-btn btn-solo" onclick="toggleSoloCamera('192.168.1.6')" title="Perbesar Layar">⛶</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ================= SLOT 4: CH-04 ================= -->
+                <div class="cctv-box" id="box-192.168.1.7" data-ip="192.168.1.7" data-channel="4">
+                    <div class="cctv-header-osd">
+                        <div class="osd-left">
+                            <span class="cctv-ch-tag">CH-04</span>
+                            <span class="cctv-cam-title" id="name-192.168.1.7">Koridor Samping</span>
+                            <span class="osd-rec-pill"><span class="osd-red-dot"></span>LIVE</span>
+                        </div>
+                    </div>
+                    <div class="cctv-video-container" ondblclick="toggleSoloCamera('192.168.1.7')">
+                        <img id="stream-192.168.1.7" class="cctv-live-feed" src="/api/camera/stream?ip=192.168.1.7&quality=360p" alt="CCTV Feed CH-04" loading="eager">
+                        <div class="cctv-hud-corners"></div>
+                        <div class="cctv-doubleclick-hint">Klik 2x Solo View</div>
+                    </div>
+                    <div class="cctv-footer-osd">
+                        <div class="osd-stats">
+                            <span class="osd-ip">192.168.1.7</span>
+                            <span class="osd-divider">•</span>
+                            <span class="osd-ping" id="ping-192.168.1.7">6.0 ms</span>
+                            <span class="osd-divider">•</span>
+                            <span class="osd-badge quality-badge" id="badge-192.168.1.7">360p</span>
+                        </div>
+                        <div class="osd-actions">
+                            <button class="osd-btn" onclick="downloadSnapshot('192.168.1.7')" title="Ambil Foto HD">📸</button>
+                            <button class="osd-btn" onclick="copyRtspUrl('192.168.1.7')" title="Salin RTSP">🔗</button>
+                            <button class="osd-btn" onclick="openCamConfig('192.168.1.7')" title="Pengaturan">⚙️</button>
+                            <button class="osd-btn btn-solo" onclick="toggleSoloCamera('192.168.1.7')" title="Perbesar Layar">⛶</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ================= SLOT 5: CH-05 (192.168.1.16) ================= -->
+                <div class="cctv-box" id="box-192.168.1.16" data-ip="192.168.1.16" data-channel="5">
+                    <div class="cctv-header-osd">
+                        <div class="osd-left">
+                            <span class="cctv-ch-tag">CH-05</span>
+                            <span class="cctv-cam-title" id="name-192.168.1.16">Kamera 16</span>
+                            <span class="osd-rec-pill"><span class="osd-red-dot"></span>LIVE</span>
+                        </div>
+                    </div>
+                    <div class="cctv-video-container" ondblclick="toggleSoloCamera('192.168.1.16')">
+                        <img id="stream-192.168.1.16" class="cctv-live-feed" src="/api/camera/stream?ip=192.168.1.16&quality=360p" alt="CCTV Feed CH-05" loading="eager">
+                        <div class="cctv-hud-corners"></div>
+                        <div class="cctv-doubleclick-hint">Klik 2x Solo View</div>
+                    </div>
+                    <div class="cctv-footer-osd">
+                        <div class="osd-stats">
+                            <span class="osd-ip">192.168.1.16</span>
+                            <span class="osd-divider">•</span>
+                            <span class="osd-ping" id="ping-192.168.1.16">12.2 ms</span>
+                            <span class="osd-divider">•</span>
+                            <span class="osd-badge quality-badge" id="badge-192.168.1.16">360p</span>
+                        </div>
+                        <div class="osd-actions">
+                            <button class="osd-btn" onclick="downloadSnapshot('192.168.1.16')" title="Ambil Foto HD">📸</button>
+                            <button class="osd-btn" onclick="copyRtspUrl('192.168.1.16')" title="Salin RTSP">🔗</button>
+                            <button class="osd-btn" onclick="openCamConfig('192.168.1.16')" title="Pengaturan">⚙️</button>
+                            <button class="osd-btn btn-solo" onclick="toggleSoloCamera('192.168.1.16')" title="Perbesar Layar">⛶</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ================= SLOT 6: CH-06 (192.168.1.20) ================= -->
+                <div class="cctv-box" id="box-192.168.1.20" data-ip="192.168.1.20" data-channel="6">
+                    <div class="cctv-header-osd">
+                        <div class="osd-left">
+                            <span class="cctv-ch-tag">CH-06</span>
+                            <span class="cctv-cam-title" id="name-192.168.1.20">Kamera 20</span>
+                            <span class="osd-rec-pill"><span class="osd-red-dot"></span>LIVE</span>
+                        </div>
+                    </div>
+                    <div class="cctv-video-container" ondblclick="toggleSoloCamera('192.168.1.20')">
+                        <img id="stream-192.168.1.20" class="cctv-live-feed" src="/api/camera/stream?ip=192.168.1.20&quality=360p" alt="CCTV Feed CH-06" loading="eager">
+                        <div class="cctv-hud-corners"></div>
+                        <div class="cctv-doubleclick-hint">Klik 2x Solo View</div>
+                    </div>
+                    <div class="cctv-footer-osd">
+                        <div class="osd-stats">
+                            <span class="osd-ip">192.168.1.20</span>
+                            <span class="osd-divider">•</span>
+                            <span class="osd-ping" id="ping-192.168.1.20">65.0 ms</span>
+                            <span class="osd-divider">•</span>
+                            <span class="osd-badge quality-badge" id="badge-192.168.1.20">360p</span>
+                        </div>
+                        <div class="osd-actions">
+                            <button class="osd-btn" onclick="downloadSnapshot('192.168.1.20')" title="Ambil Foto HD">📸</button>
+                            <button class="osd-btn" onclick="copyRtspUrl('192.168.1.20')" title="Salin RTSP">🔗</button>
+                            <button class="osd-btn" onclick="openCamConfig('192.168.1.20')" title="Pengaturan">⚙️</button>
+                            <button class="osd-btn btn-solo" onclick="toggleSoloCamera('192.168.1.20')" title="Perbesar Layar">⛶</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ================= SLOT 7: CH-07 (192.168.1.13) ================= -->
+                <div class="cctv-box" id="box-192.168.1.13" data-ip="192.168.1.13" data-channel="7">
+                    <div class="cctv-header-osd">
+                        <div class="osd-left">
+                            <span class="cctv-ch-tag">CH-07</span>
+                            <span class="cctv-cam-title" id="name-192.168.1.13">Kamera 13</span>
+                            <span class="osd-rec-pill"><span class="osd-red-dot"></span>LIVE</span>
+                        </div>
+                    </div>
+                    <div class="cctv-video-container" ondblclick="toggleSoloCamera('192.168.1.13')">
+                        <img id="stream-192.168.1.13" class="cctv-live-feed" src="/api/camera/stream?ip=192.168.1.13&quality=360p" alt="CCTV Feed CH-07" loading="eager">
+                        <div class="cctv-hud-corners"></div>
+                        <div class="cctv-doubleclick-hint">Klik 2x Solo View</div>
+                    </div>
+                    <div class="cctv-footer-osd">
+                        <div class="osd-stats">
+                            <span class="osd-ip">192.168.1.13</span>
+                            <span class="osd-divider">•</span>
+                            <span class="osd-ping" id="ping-192.168.1.13">16.0 ms</span>
+                            <span class="osd-divider">•</span>
+                            <span class="osd-badge quality-badge" id="badge-192.168.1.13">360p</span>
+                        </div>
+                        <div class="osd-actions">
+                            <button class="osd-btn" onclick="downloadSnapshot('192.168.1.13')" title="Ambil Foto HD">📸</button>
+                            <button class="osd-btn" onclick="copyRtspUrl('192.168.1.13')" title="Salin RTSP">🔗</button>
+                            <button class="osd-btn" onclick="openCamConfig('192.168.1.13')" title="Pengaturan">⚙️</button>
+                            <button class="osd-btn btn-solo" onclick="toggleSoloCamera('192.168.1.13')" title="Perbesar Layar">⛶</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ================= SLOT 8: KOSONG ================= -->
+                <div class="cctv-box cctv-box-empty">
+                    <div class="cctv-header-osd">
+                        <div class="osd-left">
+                            <span class="cctv-ch-tag tag-empty">CH-08</span>
+                            <span class="cctv-cam-title text-muted">Slot Kosong</span>
+                        </div>
+                        <div class="osd-right">
+                            <span class="osd-empty-status">NO SIGNAL</span>
+                        </div>
+                    </div>
+                    <div class="cctv-video-container empty-container">
+                        <div class="empty-icon-wrap">
+                            <span class="empty-icon">📹</span>
+                            <span class="empty-text">CH-08 STANDBY</span>
+                        </div>
+                    </div>
+                    <div class="cctv-footer-osd">
+                        <span class="text-muted font-mono">CHANNEL INACTIVE</span>
+                        <span class="osd-badge badge-dim">STANDBY</span>
+                    </div>
+                </div>
+
+                <!-- ================= SLOT 9: KOSONG ================= -->
+                <div class="cctv-box cctv-box-empty">
+                    <div class="cctv-header-osd">
+                        <div class="osd-left">
+                            <span class="cctv-ch-tag tag-empty">CH-09</span>
+                            <span class="cctv-cam-title text-muted">Slot Kosong</span>
+                        </div>
+                        <div class="osd-right">
+                            <span class="osd-empty-status">NO SIGNAL</span>
+                        </div>
+                    </div>
+                    <div class="cctv-video-container empty-container">
+                        <div class="empty-icon-wrap">
+                            <span class="empty-icon">📹</span>
+                            <span class="empty-text">CH-09 STANDBY</span>
+                        </div>
+                    </div>
+                    <div class="cctv-footer-osd">
+                        <span class="text-muted font-mono">CHANNEL INACTIVE</span>
+                        <span class="osd-badge badge-dim">STANDBY</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ============================================================
+         MODAL: CAMERA CONFIGURATION
+         ============================================================ -->
+    <div class="modal-overlay" id="camConfigModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-title-group">
+                    <span class="modal-icon">⚙️</span>
+                    <h3>Pengaturan Kamera CCTV (<span id="cfgCamIp">--</span>)</h3>
+                </div>
+                <button class="modal-close-btn" id="btnCloseCamConfigModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Nama Kamera / Lokasi</label>
+                    <input type="text" id="cfgCamName" class="form-input" placeholder="Contoh: CAM 05 - Kamera 16">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Username RTSP</label>
+                        <input type="text" id="cfgCamUser" class="form-input" placeholder="admin">
+                    </div>
+                    <div class="form-group">
+                        <label>Password RTSP</label>
+                        <input type="password" id="cfgCamPass" class="form-input" placeholder="Kosongkan jika tanpa password">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Port RTSP</label>
+                        <input type="number" id="cfgCamPort" class="form-input" placeholder="554">
+                    </div>
+                    <div class="form-group">
+                        <label>Path Stream</label>
+                        <input type="text" id="cfgCamPath" class="form-input" placeholder="/live/ch0">
+                    </div>
+                </div>
+                <div class="modal-hint">
+                    💡 Kamera AliOS Things / AltoBeam menggunakan path default <code>/live/ch0</code> pada port 554 tanpa password.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="nvr-btn" id="btnCancelCamConfig">Batal</button>
+                <button class="nvr-btn nvr-btn-primary" id="btnSaveCamConfig">Simpan Pengaturan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         MODAL: VLC / EXTERNAL PLAYER GUIDE
+         ============================================================ -->
+    <div class="modal-overlay" id="vlcModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-title-group">
+                    <span class="modal-icon">📺</span>
+                    <h3>Link RTSP Streaming Langsung (VLC / PotPlayer)</h3>
+                </div>
+                <button class="modal-close-btn" id="btnCloseVlcModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-desc">Gunakan URL RTSP berikut jika ingin membuka kamera di VLC Media Player atau NVR eksternal:</p>
+                <div class="vlc-stream-list">
+                    <div class="vlc-stream-item">
+                        <div>
+                            <strong>CAM 01 - Ruang Utama (192.168.1.4)</strong>
+                            <code class="code-url">rtsp://192.168.1.4:554/live/ch0</code>
+                        </div>
+                        <button class="osd-btn" onclick="copyToClipboard('rtsp://192.168.1.4:554/live/ch0', 'RTSP CAM 01')">📋 Salin</button>
+                    </div>
+                    <div class="vlc-stream-item">
+                        <div>
+                            <strong>CAM 02 - Pintu Masuk (192.168.1.5)</strong>
+                            <code class="code-url">rtsp://192.168.1.5:554/live/ch0</code>
+                        </div>
+                        <button class="osd-btn" onclick="copyToClipboard('rtsp://192.168.1.5:554/live/ch0', 'RTSP CAM 02')">📋 Salin</button>
+                    </div>
+                    <div class="vlc-stream-item">
+                        <div>
+                            <strong>CAM 03 - Halaman Depan (192.168.1.6)</strong>
+                            <code class="code-url">rtsp://192.168.1.6:554/live/ch0</code>
+                        </div>
+                        <button class="osd-btn" onclick="copyToClipboard('rtsp://192.168.1.6:554/live/ch0', 'RTSP CAM 03')">📋 Salin</button>
+                    </div>
+                    <div class="vlc-stream-item">
+                        <div>
+                            <strong>CAM 04 - Koridor Samping (192.168.1.7)</strong>
+                            <code class="code-url">rtsp://192.168.1.7:554/live/ch0</code>
+                        </div>
+                        <button class="osd-btn" onclick="copyToClipboard('rtsp://192.168.1.7:554/live/ch0', 'RTSP CAM 04')">📋 Salin</button>
+                    </div>
+                    <div class="vlc-stream-item">
+                        <div>
+                            <strong>CAM 05 - Kamera 16 (192.168.1.16)</strong>
+                            <code class="code-url">rtsp://192.168.1.16:554/live/ch0</code>
+                        </div>
+                        <button class="osd-btn" onclick="copyToClipboard('rtsp://192.168.1.16:554/live/ch0', 'RTSP CAM 05')">📋 Salin</button>
+                    </div>
+                    <div class="vlc-stream-item">
+                        <div>
+                            <strong>CAM 06 - Kamera 20 (192.168.1.20)</strong>
+                            <code class="code-url">rtsp://192.168.1.20:554/live/ch0</code>
+                        </div>
+                        <button class="osd-btn" onclick="copyToClipboard('rtsp://192.168.1.20:554/live/ch0', 'RTSP CAM 06')">📋 Salin</button>
+                    </div>
+                    <div class="vlc-stream-item">
+                        <div>
+                            <strong>CAM 07 - Kamera 13 (192.168.1.13)</strong>
+                            <code class="code-url">rtsp://192.168.1.13:554/live/ch0</code>
+                        </div>
+                        <button class="osd-btn" onclick="copyToClipboard('rtsp://192.168.1.13:554/live/ch0', 'RTSP CAM 07')">📋 Salin</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="nvr-btn nvr-btn-primary" id="btnCloseVlcBtn">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
