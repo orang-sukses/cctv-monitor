@@ -15,6 +15,7 @@ edit `cameras.json`, lalu klik 2x `CCTVMonitor.exe`.
 ```
 - `max_fps`: batas fps tampil (0 = tanpa batas)
 - `hwaccel`: decode GPU (D3D11VA), otomatis fallback ke CPU
+- `overlay` (opsional): tampilan teks nama/status kamera — `position` ("bottom"/"top"), `font`, `size`, `bold`, `name_color`, `live_color`, `warn_color` (warna hex), `bar_opacity` (0-255), `show_name`, `show_status`
 - `sub_url` (opsional): stream ringan untuk grid; `url` dipakai saat satu kamera diperbesar
 
 ## Kontrol

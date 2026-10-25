@@ -24,7 +24,7 @@ MainWindow::MainWindow(const AppConfig &cfg) : cfg_(cfg) {
     cols_ = std::max(1, int(std::ceil(std::sqrt(double(n)))));
     for (int i = 0; i < n; ++i) {
         auto *w = new CameraWorker(cfg_.cameras[i], cfg_, this);
-        auto *v = new CameraView(w, i, host);
+        auto *v = new CameraView(w, i, cfg_.overlay, host);
         connect(v, &CameraView::doubleClicked, this, &MainWindow::toggleSolo);
         connect(v, &CameraView::mouseMoved, this, &MainWindow::showCursor);
         workers_.push_back(w);

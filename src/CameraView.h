@@ -2,13 +2,14 @@
 #include <QWidget>
 
 class CameraWorker;
+struct OverlayStyle;
 class QTimer;
 
 // Widget satu kamera: menggambar frame terbaru + overlay nama/status/REC.
 class CameraView : public QWidget {
     Q_OBJECT
 public:
-    CameraView(CameraWorker *worker, int index, QWidget *parent = nullptr);
+    CameraView(CameraWorker *worker, int index, const OverlayStyle &style, QWidget *parent = nullptr);
 
 signals:
     void doubleClicked(int index);
@@ -24,4 +25,5 @@ private:
     CameraWorker *worker_;
     int index_;
     int tick_ = 0;
+    const OverlayStyle &style_;
 };

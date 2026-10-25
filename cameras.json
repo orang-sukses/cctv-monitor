@@ -1,5 +1,8 @@
 {
   "max_fps": 0,
+  "overlay": {"position": "bottom", "font": "Segoe UI", "size": 9, "bold": true,
+              "name_color": "#EBEBEB", "live_color": "#50DC78", "warn_color": "#FFAA3C",
+              "bar_opacity": 150, "show_name": true, "show_status": true},
   "cameras": [
     {"name": "CAM 01 - Ruang Utama",    "url": "rtsp://admin:@192.168.1.4:554/live/ch0"},
     {"name": "CAM 02 - Pintu Masuk",    "url": "rtsp://admin:@192.168.1.2:554/live/ch0"},
