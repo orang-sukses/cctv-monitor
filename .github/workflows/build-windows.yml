@@ -1,0 +1,54 @@
+name: Build Windows
+
+on:
+  push:
+    branches: [main, master]
+    tags: ["v*"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: jurplel/install-qt-action@v4
+        with:
+          version: 6.7.2
+          arch: win64_msvc2019_64
+          cache: true
+
+      - name: Unduh FFmpeg (shared)
+        shell: pwsh
+        run: |
+          curl.exe -L -o ffmpeg.zip https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-n8.1-latest-win64-lgpl-shared-8.1.zip
+          Expand-Archive ffmpeg.zip -DestinationPath ffmpeg
+          $root = (Get-ChildItem ffmpeg -Directory | Select-Object -First 1).FullName
+          "FFMPEG_ROOT=$root" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Build
+        shell: pwsh
+        run: |
+          cmake -S . -B build -A x64 -DFFMPEG_ROOT="$env:FFMPEG_ROOT"
+          cmake --build build --config Release
+
+      - name: Paketkan
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory dist/CCTVMonitor | Out-Null
+          Copy-Item build/Release/CCTVMonitor.exe dist/CCTVMonitor/
+          Copy-Item "$env:FFMPEG_ROOT/bin/*.dll" dist/CCTVMonitor/
+          Copy-Item cameras.json dist/CCTVMonitor/
+          windeployqt --release --no-translations dist/CCTVMonitor/CCTVMonitor.exe
+          Compress-Archive dist/CCTVMonitor dist/CCTVMonitor-windows.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CCTVMonitor-windows
+          path: dist/CCTVMonitor-windows.zip
+
+      - name: Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/CCTVMonitor-windows.zip

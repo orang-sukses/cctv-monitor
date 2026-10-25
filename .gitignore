@@ -1,4 +1,7 @@
+build/
+dist/
+ffmpeg/
+recordings/
+snapshots/
 *.log
-__pycache__/
-*.pyc
 .DS_Store
