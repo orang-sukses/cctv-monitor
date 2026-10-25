@@ -18,7 +18,7 @@ edit `cameras.json`, lalu klik 2x `CCTVMonitor.exe`.
 - `sub_url` (opsional): stream ringan untuk grid; `url` dipakai saat satu kamera diperbesar
 
 ## Kontrol
-`1`-`9` / klik 2x kamera: perbesar · `0`/`Esc`: kembali ke grid · `R`: rekam semua (folder `recordings/`, per 10 menit, tanpa re-encode) · `S`: snapshot (`snapshots/`) · `F`/`F11`: fullscreen · `Q`: keluar
+`1`-`9` / klik 2x kamera: perbesar · `0`/`Esc`: kembali ke grid · `R`: rekam semua (folder `recordings/`, per 10 menit, tanpa re-encode) · `S`: snapshot (`snapshots/`) · `F`/`F11`: fullscreen (default-nya jendela biasa; jalankan dengan `--fullscreen` untuk langsung fullscreen) · `Q`: keluar
 
 ## Build sendiri
 - **GitHub Actions**: push ke `main` -> workflow `Build Windows` menghasilkan zip siap pakai.

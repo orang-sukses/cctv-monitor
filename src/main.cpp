@@ -30,11 +30,11 @@ int main(int argc, char **argv) {
 
     MainWindow win(cfg);
     const QStringList args = app.arguments();
-    if (args.contains("--windowed") || qEnvironmentVariable("QT_QPA_PLATFORM") == "offscreen") {
+    if (args.contains("--fullscreen") && qEnvironmentVariable("QT_QPA_PLATFORM") != "offscreen") {
+        win.showFullScreen();
+    } else {
         win.resize(1280, 720);
         win.show();
-    } else {
-        win.showFullScreen();
     }
     if (args.contains("--selftest")) QTimer::singleShot(6000, &app, &QCoreApplication::quit);
     return app.exec();
