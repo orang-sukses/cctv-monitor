@@ -56,6 +56,14 @@ jobs:
         with:
           files: dist/CCTVMonitor-windows.zip
 
+      - name: Release terbaru (zip lengkap)
+        if: github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: Build terbaru
+          files: dist/CCTVMonitor-windows.zip
+
       - name: Publikasikan exe terbaru ke branch latest-exe
         if: github.ref == 'refs/heads/main'
         shell: pwsh
