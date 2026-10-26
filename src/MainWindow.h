@@ -3,13 +3,20 @@
 
 #include <QMainWindow>
 #include <QTimer>
+#include <algorithm>
 #include <vector>
 
 class CameraView;
 class CameraWorker;
+class QButtonGroup;
 class QGridLayout;
+class QLabel;
+class QListWidget;
+class QToolButton;
+class QWidget;
 
-// Jendela utama: grid kamera, mode solo (satu kamera penuh), rekam, snapshot, fullscreen.
+// Jendela utama bergaya V380: sidebar daftar kamera, grid 1/4/9/16 layar, toolbar
+// (rekam, foto, SD/HD, layar penuh), mode solo (satu kamera penuh).
 class MainWindow : public QMainWindow {
     Q_OBJECT
 public:
@@ -22,17 +29,34 @@ protected:
     void mouseMoveEvent(QMouseEvent *) override { showCursor(); }
 
 private:
-    int rows() const { return (int(views_.size()) + cols_ - 1) / cols_; }
-    void toggleSolo(int idx);
+    void buildUi();
+    QToolButton *makeButton(const QString &text, const QString &tip, bool checkable = false);
+    int pageCount() const { return std::max(1, (int(views_.size()) + layout_ - 1) / layout_); }
+    void relayout();
     void applyVisibility();
+    void applyChrome();
+    void refreshUi();
+    void selectCamera(int idx);
+    void setLayoutCount(int n);
+    void changePage(int delta);
+    void toggleSolo(int idx);
+    void toggleHd();
     void toggleRecording();
+    void toggleFullscreen();
     void snapshot();
     void showCursor();
 
     AppConfig cfg_;
-    QGridLayout *grid_;
+    QWidget *host_ = nullptr, *sidebar_ = nullptr, *toolbar_ = nullptr;
+    QGridLayout *grid_ = nullptr;
+    QListWidget *list_ = nullptr;
+    QLabel *pageLabel_ = nullptr, *usageLabel_ = nullptr;
+    QToolButton *recBtn_ = nullptr, *hdBtn_ = nullptr;
+    QButtonGroup *layoutGroup_ = nullptr;
+    std::vector<QToolButton *> layoutBtns_;
     std::vector<CameraWorker *> workers_;
     std::vector<CameraView *> views_;
-    int cols_ = 1, solo_ = -1;
+    std::vector<bool> shown_;
+    int layout_ = 1, page_ = 0, sel_ = -1, solo_ = -1;   // sel_/solo_: -1 = tidak ada
     QTimer hideCursorTimer_;
 };

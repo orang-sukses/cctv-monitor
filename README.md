@@ -20,8 +20,10 @@ edit `cameras.json`, lalu klik 2x `CCTVMonitor.exe`.
 - `sub_url` (opsional): stream ringan untuk mode SD
 - Overlay tiap kamera menampilkan total data internet yang terpakai; judul jendela menampilkan total semua kamera dan mode SD/HD
 
-## Kontrol
-`1`-`9` / klik 2x kamera: perbesar · `0`/`Esc`: kembali ke grid · `R`: rekam semua (folder `recordings/`, per 10 menit, tanpa re-encode) · `S`: snapshot (`snapshots/`) · `H`: ganti SD/HD · `F`/`F11`: fullscreen (default-nya jendela biasa; jalankan dengan `--fullscreen` untuk langsung fullscreen) · `Q`: keluar
+## Tampilan & kontrol
+Gaya V380: sidebar daftar kamera (klik = pilih, klik 2x = perbesar), grid layar 1/4/9/16 dengan halaman, dan toolbar di bawah (layout, halaman, SD/HD, Foto, Rekam, Layar Penuh, total internet). Foto/Rekam berlaku untuk kamera yang dipilih, atau semua kamera bila belum ada yang dipilih.
+
+Keyboard: `1`-`9`: perbesar kamera · `0`/`Esc`: kembali ke grid · `←`/`→`: halaman · `R`: rekam (folder `recordings/`, per 10 menit, tanpa re-encode) · `S`: foto (`snapshots/`) · `H`: ganti SD/HD · `F`/`F11`: layar penuh (hanya video; jalankan dengan `--fullscreen` untuk langsung layar penuh) · `Q`: keluar
 
 ## Build sendiri
 - **GitHub Actions**: push ke `main` -> workflow `Build Windows` menghasilkan zip siap pakai.

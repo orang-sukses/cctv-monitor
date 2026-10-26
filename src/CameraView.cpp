@@ -78,4 +78,9 @@ void CameraView::paintEvent(QPaintEvent *) {
         p.setFont(QFont("Segoe UI", 12));
         p.drawText(rect(), Qt::AlignCenter, "Menyambung ke kamera...");
     }
+    if (selected_) {
+        p.setPen(QPen(QColor("#1E88E5"), 2));
+        p.setBrush(Qt::NoBrush);
+        p.drawRect(rect().adjusted(1, 1, -2, -2));
+    }
 }
