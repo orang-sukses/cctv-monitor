@@ -114,7 +114,6 @@ bool CameraWorker::session() {
         }
         if (now - lastFrame > kStallSec) break;
         meter.bytes(pkt->size);
-        totalBytes_ += pkt->size;
 
         if (dec.send(pkt.get())) {
             while (dec.receive()) {

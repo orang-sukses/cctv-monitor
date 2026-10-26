@@ -221,11 +221,9 @@ void MainWindow::applyChrome() {
 }
 
 void MainWindow::refreshUi() {
-    unsigned long long total = 0;
-    double kbps = 0;
+    double kbps = 0;   // jumlah kecepatan terima semua kamera
     for (int i = 0; i < int(workers_.size()); ++i) {
         const CameraWorker *w = workers_[i];
-        total += w->totalBytes();
         kbps += w->kbps();
         QListWidgetItem *it = list_->item(i);
         it->setText(QString::fromUtf8("\xE2\x97\x8F ") + w->name() + (w->recording() ? QString("   REC") : QString()));
@@ -244,7 +242,7 @@ void MainWindow::refreshUi() {
         if ((sel_ < 0 || i == sel_) && workers_[i]->recording()) rec = true;
     recBtn_->setChecked(rec);
 
-    const QString usage = QString("Internet: %1  (%2 Mbps)").arg(formatBytes(total)).arg(kbps / 1000.0, 0, 'f', 1);
+    const QString usage = QString("Internet realtime: %1 Mbps (terima / read)").arg(kbps / 1000.0, 0, 'f', 2);
     usageLabel_->setText(usage);
     setWindowTitle(QString("CCTV Monitor [%1] - %2").arg(QString(hd ? "HD" : "SD"), usage));
 }

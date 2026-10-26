@@ -26,7 +26,6 @@ public:
     CameraState state() const { return state_; }
     double fps() const { return fps_; }
     double kbps() const { return kbps_; }
-    unsigned long long totalBytes() const { return totalBytes_; }   // total data diterima sejak aplikasi jalan
     QImage image() const { return buffer_.take(); }
 
     // Dari thread UI
@@ -62,5 +61,4 @@ private:
     std::atomic<CameraState> state_{CameraState::Connecting};
     std::atomic<int> boxW_{640}, boxH_{360};
     std::atomic<double> fps_{0}, kbps_{0};
-    std::atomic<unsigned long long> totalBytes_{0};
 };

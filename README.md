@@ -18,10 +18,10 @@ edit `cameras.json`, lalu klik 2x `CCTVMonitor.exe`.
 - `overlay` (opsional): tampilan teks nama/status kamera — `position` ("bottom"/"top"), `font`, `size`, `bold`, `name_color`, `live_color`, `warn_color` (warna hex), `bar_opacity` (0-255), `show_name`, `show_status`
 - `quality`: `"sd"` (default, memakai `sub_url`, atau `url` bila kosong) atau `"hd"` (memakai `url` utama); bisa diganti saat berjalan dengan tombol `H`
 - `sub_url` (opsional): stream ringan untuk mode SD
-- Overlay tiap kamera menampilkan total data internet yang terpakai; judul jendela menampilkan total semua kamera dan mode SD/HD
+- Overlay tiap kamera menampilkan fps dan kecepatan (kbps) kamera itu; toolbar dan judul jendela menampilkan total kecepatan internet realtime semua kamera (mis. 3 kamera x 500 kbps = 1,50 Mbps) dan mode SD/HD
 
 ## Tampilan & kontrol
-Gaya V380: sidebar daftar kamera (klik = pilih, klik 2x = perbesar), grid layar 1/4/9/16 dengan halaman, dan toolbar di bawah (layout, halaman, SD/HD, Foto, Rekam, Layar Penuh, total internet). Foto/Rekam berlaku untuk kamera yang dipilih, atau semua kamera bila belum ada yang dipilih.
+Gaya V380: sidebar daftar kamera (klik = pilih, klik 2x = perbesar), grid layar 1/4/9/16 dengan halaman, dan toolbar di bawah (layout, halaman, SD/HD, Foto, Rekam, Layar Penuh, total kecepatan internet realtime). Foto/Rekam berlaku untuk kamera yang dipilih, atau semua kamera bila belum ada yang dipilih.
 
 Keyboard: `1`-`9`: perbesar kamera · `0`/`Esc`: kembali ke grid · `←`/`→`: halaman · `R`: rekam (folder `recordings/`, per 10 menit, tanpa re-encode) · `S`: foto (`snapshots/`) · `H`: ganti SD/HD · `F`/`F11`: layar penuh (hanya video; jalankan dengan `--fullscreen` untuk langsung layar penuh) · `Q`: keluar
 
