@@ -52,7 +52,10 @@ void CameraView::paintEvent(QPaintEvent *) {
     const int barY = style_.atBottom ? height() - barH : 0;
     p.fillRect(0, barY, width(), barH, QColor(0, 0, 0, style_.barOpacity));
     const QRect bar(8, barY, width() - 16, barH);
-    const QString txt = live ? QString("LIVE  %1fps  %2kbps").arg(worker_->fps(), 0, 'f', 0).arg(worker_->kbps(), 0, 'f', 0)
+    const QString txt = live ? QString("LIVE  %1fps  %2kbps  %3")
+                                   .arg(worker_->fps(), 0, 'f', 0)
+                                   .arg(worker_->kbps(), 0, 'f', 0)
+                                   .arg(formatBytes(worker_->totalBytes()))
                              : QString(toString(state));
     if (style_.showName) {
         p.setPen(QColor(style_.nameColor));

@@ -16,10 +16,12 @@ edit `cameras.json`, lalu klik 2x `CCTVMonitor.exe`.
 - `max_fps`: batas fps tampil (0 = tanpa batas)
 - `hwaccel`: decode GPU (D3D11VA), otomatis fallback ke CPU
 - `overlay` (opsional): tampilan teks nama/status kamera — `position` ("bottom"/"top"), `font`, `size`, `bold`, `name_color`, `live_color`, `warn_color` (warna hex), `bar_opacity` (0-255), `show_name`, `show_status`
-- `sub_url` (opsional): stream ringan untuk grid; `url` dipakai saat satu kamera diperbesar
+- `quality`: `"sd"` (default, memakai `sub_url`, atau `url` bila kosong) atau `"hd"` (memakai `url` utama); bisa diganti saat berjalan dengan tombol `H`
+- `sub_url` (opsional): stream ringan untuk mode SD
+- Overlay tiap kamera menampilkan total data internet yang terpakai; judul jendela menampilkan total semua kamera dan mode SD/HD
 
 ## Kontrol
-`1`-`9` / klik 2x kamera: perbesar · `0`/`Esc`: kembali ke grid · `R`: rekam semua (folder `recordings/`, per 10 menit, tanpa re-encode) · `S`: snapshot (`snapshots/`) · `F`/`F11`: fullscreen (default-nya jendela biasa; jalankan dengan `--fullscreen` untuk langsung fullscreen) · `Q`: keluar
+`1`-`9` / klik 2x kamera: perbesar · `0`/`Esc`: kembali ke grid · `R`: rekam semua (folder `recordings/`, per 10 menit, tanpa re-encode) · `S`: snapshot (`snapshots/`) · `H`: ganti SD/HD · `F`/`F11`: fullscreen (default-nya jendela biasa; jalankan dengan `--fullscreen` untuk langsung fullscreen) · `Q`: keluar
 
 ## Build sendiri
 - **GitHub Actions**: push ke `main` -> workflow `Build Windows` menghasilkan zip siap pakai.

@@ -46,7 +46,7 @@ struct PacketGuard {
 CameraWorker::CameraWorker(const CameraConfig &cam, const AppConfig &cfg, QObject *parent)
     : QObject(parent), name_(cam.name), mainUrl_(cam.url.toStdString()),
       subUrl_((cam.subUrl.isEmpty() ? cam.url : cam.subUrl).toStdString()), recDir_(cfg.recordingsDir),
-      minInterval_(cfg.maxFps > 0 ? 0.85 / cfg.maxFps : 0.0), useHw_(cfg.hwaccel) {}
+      minInterval_(cfg.maxFps > 0 ? 0.85 / cfg.maxFps : 0.0), useHw_(cfg.hwaccel), hd_(cfg.hd) {}
 
 void CameraWorker::start() { thread_ = std::thread([this] { run(); }); }
 
@@ -114,6 +114,7 @@ bool CameraWorker::session() {
         }
         if (now - lastFrame > kStallSec) break;
         meter.bytes(pkt->size);
+        totalBytes_ += pkt->size;
 
         if (dec.send(pkt.get())) {
             while (dec.receive()) {

@@ -40,6 +40,18 @@ MainWindow::MainWindow(const AppConfig &cfg) : cfg_(cfg) {
     hideCursorTimer_.start();
 
     for (auto *w : workers_) w->start();
+
+    auto *usage = new QTimer(this);   // total pemakaian internet semua kamera di judul jendela
+    usage->setInterval(1000);
+    connect(usage, &QTimer::timeout, this, [this] {
+        unsigned long long total = 0;
+        double kbps = 0;
+        for (auto *w : workers_) { total += w->totalBytes(); kbps += w->kbps(); }
+        setWindowTitle(QString("CCTV Monitor [%1] - Internet: %2 (%3 Mbps)")
+                           .arg(workers_[0]->hd() ? "HD" : "SD")
+                           .arg(formatBytes(total)).arg(kbps / 1000.0, 0, 'f', 1));
+    });
+    usage->start();
 }
 
 MainWindow::~MainWindow() {
@@ -67,7 +79,6 @@ void MainWindow::toggleSolo(int idx) {
     solo_ = (solo_ == idx) ? -1 : idx;
     for (int i = 0; i < int(views_.size()); ++i) {
         views_[i]->setVisible(solo_ < 0 || i == solo_);
-        workers_[i]->setSolo(solo_ == i);
         if (solo_ == i) grid_->addWidget(views_[i], 0, 0, rows(), cols_);   // satu kamera penuh layar
         else grid_->addWidget(views_[i], i / cols_, i % cols_);
     }
@@ -107,6 +118,9 @@ void MainWindow::keyPressEvent(QKeyEvent *e) {
         toggleRecording();
     } else if (k == Qt::Key_S) {
         snapshot();
+    } else if (k == Qt::Key_H) {
+        const bool hd = !(!workers_.empty() && workers_[0]->hd());   // SD <-> HD untuk semua kamera
+        for (auto *w : workers_) w->setHd(hd);
     } else if (k == Qt::Key_Q) {
         close();
     }

@@ -20,6 +20,7 @@ bool AppConfig::load(const QString &path, AppConfig &out, QString &error) {
     const QJsonObject o = doc.object();
     out.maxFps = o["max_fps"].toDouble(0);
     out.hwaccel = o["hwaccel"].toBool(true);
+    out.hd = o["quality"].toString("sd").toLower() == "hd";
     {
         const QJsonObject ov = o["overlay"].toObject();
         OverlayStyle &st = out.overlay;
