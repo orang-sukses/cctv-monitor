@@ -13,6 +13,7 @@
     {"name": "CAM 05 - Kamera 16",      "url": "rtsp://admin:@192.168.1.16:554/live/ch0", "sub_url": "rtsp://admin:@192.168.1.16:554/live/ch1"},
     {"name": "CAM 06 - Kamera 14",      "url": "rtsp://admin:@192.168.1.14:554/live/ch0", "sub_url": "rtsp://admin:@192.168.1.14:554/live/ch1"},
     {"name": "CAM 07 - Kamera 13",      "url": "rtsp://admin:@192.168.1.13:554/live/ch0", "sub_url": "rtsp://admin:@192.168.1.13:554/live/ch1"},
-    {"name": "CAM 08 - Kamera 11",      "url": "rtsp://admin:@192.168.1.11:554/live/ch0", "sub_url": "rtsp://admin:@192.168.1.11:554/live/ch1"}
+    {"name": "CAM 08 - Kamera 11",      "url": "rtsp://admin:@192.168.1.11:554/live/ch0", "sub_url": "rtsp://admin:@192.168.1.11:554/live/ch1"},
+    {"name": "CAM 09 - Kamera 6",       "url": "rtsp://admin:@192.168.1.6:554/live/ch0", "sub_url": "rtsp://admin:@192.168.1.6:554/live/ch1"}
   ]
 }
