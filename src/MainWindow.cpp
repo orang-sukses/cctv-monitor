@@ -101,8 +101,8 @@ MainWindow::MainWindow(const AppConfig &cfg) : cfg_(cfg) {
     screenTimer_.setSingleShot(true);
     screenTimer_.setInterval(800);
     connect(&screenTimer_, &QTimer::timeout, this, &MainWindow::applyScreens);
-    connect(qApp, &QGuiApplication::screenAdded, this, [this] { screenTimer_.start(); });
-    connect(qApp, &QGuiApplication::screenRemoved, this, [this] { screenTimer_.start(); });
+    connect(qGuiApp, &QGuiApplication::screenAdded, this, [this] { screenTimer_.start(); });
+    connect(qGuiApp, &QGuiApplication::screenRemoved, this, [this] { screenTimer_.start(); });
 
     for (auto *w : workers_) w->start();
 
