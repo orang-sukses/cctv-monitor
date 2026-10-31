@@ -11,8 +11,8 @@
     {"name": "CAM 03 - Halaman Samping", "url": "rtsp://admin:@192.168.1.16:554/live/ch0", "sub_url": "rtsp://admin:@192.168.1.16:554/live/ch1"},
     {"name": "CAM 04 - Ruang Cuci", "url": "rtsp://admin:@192.168.1.11:554/live/ch0", "sub_url": "rtsp://admin:@192.168.1.11:554/live/ch1"},
     {"name": "CAM 05 - Ruang Produksi", "url": "rtsp://admin:@192.168.1.6:554/live/ch0", "sub_url": "rtsp://admin:@192.168.1.6:554/live/ch1"},
-    {"name": "CAM 06 - Ruang Dingin","url": "rtsp://admin:@192.168.1.8:554/live/ch0", "sub_url": "rtsp://admin:@192.168.1.8:554/live/ch1"},
-    {"name": "CAM 07 - Ruang Kering","url": "rtsp://admin:@192.168.1.9:554/live/ch0", "sub_url": "rtsp://admin:@192.168.1.9:554/live/ch1"},
+    {"name": "CAM 06 - Gudang Basah","url": "rtsp://admin:@192.168.1.8:554/live/ch0", "sub_url": "rtsp://admin:@192.168.1.8:554/live/ch1"},
+    {"name": "CAM 07 - Gudang Kering","url": "rtsp://admin:@192.168.1.9:554/live/ch0", "sub_url": "rtsp://admin:@192.168.1.9:554/live/ch1"},
     {"name": "CAM 08 - Ruang Pemorsian", "url": "rtsp://admin:@192.168.1.15:554/live/ch0", "sub_url": "rtsp://admin:@192.168.1.15:554/live/ch1"}
   ]
 }
