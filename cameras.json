@@ -1,6 +1,7 @@
 {
   "max_fps": 0,
   "quality": "sd",
+  "screen_margin": 40,
   "overlay": {"position": "bottom", "font": "Segoe UI", "size": 9, "bold": true,
               "name_color": "#EBEBEB", "live_color": "#50DC78", "warn_color": "#FFAA3C",
               "bar_opacity": 150, "show_name": true, "show_status": true},

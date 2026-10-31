@@ -77,8 +77,11 @@ MainWindow::MainWindow(const AppConfig &cfg) : cfg_(cfg) {
     });
     hideCursorTimer_.start();
 
-    autoScreen_ = QSettings(QCoreApplication::applicationDirPath() + "/settings.ini", QSettings::IniFormat)
-                      .value("auto_second_screen", true).toBool();
+    {
+        QSettings st(QCoreApplication::applicationDirPath() + "/settings.ini", QSettings::IniFormat);
+        autoScreen_ = st.value("auto_second_screen", true).toBool();
+        marginPx_ = std::clamp(st.value("screen_margin", cfg_.screenMargin).toInt(), 0, 300);
+    }
 
     // Ikon tray: jendela yang disembunyikan (tanpa monitor kedua) tetap bisa dibuka / diatur / ditutup.
     QIcon trayIcon = windowIcon();
@@ -138,6 +141,7 @@ void MainWindow::buildUi() {
     root->setMouseTracking(true);
     setCentralWidget(root);
     auto *main = new QHBoxLayout(root);
+    rootLayout_ = main;
     main->setContentsMargins(0, 0, 0, 0);
     main->setSpacing(0);
 
@@ -269,7 +273,22 @@ void MainWindow::applyChrome() {
     sidebar_->setVisible(!fs);
     toolbar_->setVisible(!fs);
     floatBtn_->setVisible(fs);
+    applyMargin();
     placeFloatBtn();
+}
+
+// Layar penuh: beri ruang kosong di semua sisi agar tidak terpotong tepi monitor/TV (overscan).
+void MainWindow::applyMargin() {
+    const int m = isFullScreen() ? marginPx_ : 0;
+    rootLayout_->setContentsMargins(m, m, m, m);
+}
+
+void MainWindow::adjustMargin(int delta) {
+    marginPx_ = std::clamp(marginPx_ + delta, 0, 300);
+    QSettings(QCoreApplication::applicationDirPath() + "/settings.ini", QSettings::IniFormat)
+        .setValue("screen_margin", marginPx_);
+    applyMargin();
+    QTimer::singleShot(0, this, [this] { placeFloatBtn(); });
 }
 
 void MainWindow::placeFloatBtn() {
@@ -471,6 +490,10 @@ void MainWindow::keyPressEvent(QKeyEvent *e) {
         toggleHd();
     } else if (k == Qt::Key_A) {
         setAutoScreen(!autoScreen_);
+    } else if (k == Qt::Key_Plus || k == Qt::Key_Equal) {
+        adjustMargin(+4);          // margin layar penuh lebih besar
+    } else if (k == Qt::Key_Minus) {
+        adjustMargin(-4);
     } else if (k == Qt::Key_Left || k == Qt::Key_PageUp) {
         changePage(-1);
     } else if (k == Qt::Key_Right || k == Qt::Key_PageDown) {

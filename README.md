@@ -25,7 +25,7 @@ Gaya V380: sidebar daftar kamera (klik = pilih, klik 2x = perbesar), grid layar 
 
 **Layar kedua (otomatis)**: bila ada monitor kedua, aplikasi otomatis tampil layar penuh di monitor kedua. Bila hanya 1 monitor, tidak ada otomatisasi (jendela tidak muncul sendiri; buka lewat ikon tray). Tombol **Auto Layar 2: ON/OFF** (toolbar, tombol mengambang saat layar penuh, menu tray, atau tombol `A`) menghidupkan/mematikannya; pilihan disimpan di `settings.ini`. Mencolok/mencabut monitor kedua diterapkan otomatis.
 
-Keyboard: `A`: auto layar 2 · `1`-`9`: perbesar kamera · `0`/`Esc`: kembali ke grid · `←`/`→`: halaman · `R`: rekam (folder `recordings/`, per 10 menit, tanpa re-encode) · `S`: foto (`snapshots/`) · `H`: ganti SD/HD · `F`/`F11`: layar penuh (hanya video; jalankan dengan `--fullscreen` untuk langsung layar penuh) · `Q`: keluar
+Keyboard: `-` / `+`: kecilkan/besarkan margin layar penuh (default 40 px, agar tepi tidak terpotong monitor; atau `screen_margin` di cameras.json) · `A`: auto layar 2 · `1`-`9`: perbesar kamera · `0`/`Esc`: kembali ke grid · `←`/`→`: halaman · `R`: rekam (folder `recordings/`, per 10 menit, tanpa re-encode) · `S`: foto (`snapshots/`) · `H`: ganti SD/HD · `F`/`F11`: layar penuh (hanya video; jalankan dengan `--fullscreen` untuk langsung layar penuh) · `Q`: keluar
 
 ## Build sendiri
 - **GitHub Actions**: push ke `main` -> workflow `Build Windows` menghasilkan zip siap pakai.

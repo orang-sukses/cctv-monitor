@@ -56,6 +56,8 @@ private:
     void showCursor();
     void applyScreens();
     void bringUp();
+    void applyMargin();
+    void adjustMargin(int delta);
     static QScreen *secondScreen();
     void setAutoScreen(bool on);
     void placeFloatBtn();
@@ -73,6 +75,8 @@ private:
     std::vector<bool> shown_;
     int layout_ = 1, page_ = 0, sel_ = -1, solo_ = -1;   // sel_/solo_: -1 = tidak ada
     QTimer hideCursorTimer_, screenTimer_;
+    class QHBoxLayout *rootLayout_ = nullptr;
+    int marginPx_ = 40;        // margin layar penuh (px), "screen_margin"
     bool autoScreen_ = true;   // otomatisasi layar kedua (disimpan di settings.ini)
     QToolButton *autoBtn_ = nullptr, *floatBtn_ = nullptr;
     QSystemTrayIcon *tray_ = nullptr;

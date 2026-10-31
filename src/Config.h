@@ -30,6 +30,7 @@ public:
     double maxFps = 0;          // 0 = tanpa batas
     bool hwaccel = true;        // decode GPU bila tersedia
     bool hd = false;            // "quality": "sd" (default, sub_url) | "hd" (url utama)
+    int screenMargin = 40;      // "screen_margin": ruang kosong (px) di semua sisi saat layar penuh
     OverlayStyle overlay;
     std::vector<CameraConfig> cameras;
     QString recordingsDir, snapshotsDir;
