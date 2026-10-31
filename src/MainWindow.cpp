@@ -19,6 +19,7 @@
 #include <QScreen>
 #include <QStyle>
 #include <QSettings>
+#include <QWindow>
 #include <QToolButton>
 #include <QVBoxLayout>
 #include <algorithm>
@@ -86,14 +87,17 @@ MainWindow::MainWindow(const AppConfig &cfg) : cfg_(cfg) {
     tray_ = new QSystemTrayIcon(trayIcon, this);
     tray_->setToolTip("CCTV Monitor");
     auto *menu = new QMenu(this);
-    menu->addAction("Tampilkan jendela", this, [this] { showNormal(); raise(); activateWindow(); });
-    trayAuto_ = menu->addAction("Otomatis layar kedua", this, [this] { setAutoScreen(!autoScreen_); });
+    QAction *actShow = menu->addAction("Tampilkan jendela");
+    connect(actShow, &QAction::triggered, this, [this] { bringUp(); });
+    trayAuto_ = menu->addAction("Otomatis layar kedua");
     trayAuto_->setCheckable(true);
+    connect(trayAuto_, &QAction::triggered, this, [this] { setAutoScreen(!autoScreen_); });
     menu->addSeparator();
-    menu->addAction("Keluar", this, [this] { close(); });
+    QAction *actQuit = menu->addAction("Keluar");
+    connect(actQuit, &QAction::triggered, qGuiApp, &QCoreApplication::quit);   // jendela boleh sedang tersembunyi
     tray_->setContextMenu(menu);
     connect(tray_, &QSystemTrayIcon::activated, this, [this](QSystemTrayIcon::ActivationReason r) {
-        if (r == QSystemTrayIcon::Trigger) { showNormal(); raise(); activateWindow(); }
+        if (r == QSystemTrayIcon::Trigger) bringUp();
     });
     tray_->show();
 
@@ -276,7 +280,24 @@ void MainWindow::placeFloatBtn() {
 
 void MainWindow::resizeEvent(QResizeEvent *e) {
     QMainWindow::resizeEvent(e);
-    placeFloatBtn();
+    QTimer::singleShot(0, this, [this] { placeFloatBtn(); });   // setelah layout menetapkan ukuran host_
+}
+
+QScreen *MainWindow::secondScreen() {
+    for (QScreen *s : QGuiApplication::screens())
+        if (s != QGuiApplication::primaryScreen()) return s;
+    return nullptr;
+}
+
+// Dari ikon tray: ke monitor kedua bila ada (otomatis ON); jika tidak ada, jendela biasa.
+void MainWindow::bringUp() {
+    if (autoScreen_ && secondScreen()) {
+        applyScreens();
+    } else {
+        showNormal();
+    }
+    raise();
+    activateWindow();
 }
 
 // Layar kedua: ada -> tampil otomatis layar penuh di sana; tidak ada (1 monitor) -> tidak ada otomatisasi
@@ -286,9 +307,7 @@ void MainWindow::applyScreens() {
         if (!isVisible()) showNormal();
         return;
     }
-    QScreen *second = nullptr;
-    for (QScreen *s : QGuiApplication::screens())
-        if (s != QGuiApplication::primaryScreen()) { second = s; break; }
+    QScreen *second = secondScreen();
     if (!second) {
         if (isVisible()) hide();
         return;

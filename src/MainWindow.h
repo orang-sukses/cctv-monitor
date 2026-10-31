@@ -8,6 +8,7 @@
 #include <vector>
 
 class QAction;
+class QScreen;
 class CameraView;
 class CameraWorker;
 class QButtonGroup;
@@ -54,6 +55,8 @@ private:
     void snapshot();
     void showCursor();
     void applyScreens();
+    void bringUp();
+    static QScreen *secondScreen();
     void setAutoScreen(bool on);
     void placeFloatBtn();
 

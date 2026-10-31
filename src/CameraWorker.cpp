@@ -71,17 +71,20 @@ void CameraWorker::sleepInterruptible(double sec) {
 void CameraWorker::run() {
     double delay = 1.0;
     while (!stop_) {
+        const double t0 = nowSec();
         const bool switched = session();
         if (stop_) break;
         state_ = CameraState::Reconnect;
         fps_ = kbps_ = 0;
-        if (switched) { delay = 1.0; continue; }   // pindah grid<->solo: langsung sambung
+        if (switched) { delay = 1.0; continue; }   // pindah SD<->HD: langsung sambung
+        if (nowSec() - t0 > 15) delay = 1.0;       // sesi sempat lama: putus sesaat, sambung cepat
         sleepInterruptible(delay);
         delay = std::min(delay * 2, 5.0);
     }
 }
 
 bool CameraWorker::session() {
+    const bool hd0 = hd_;
     const std::string url = currentUrl();
     StreamInput in(stop_);
     if (!in.open(url)) return false;
@@ -102,7 +105,7 @@ bool CameraWorker::session() {
     while (!stop_ && in.read(pkt)) {
         PacketGuard guard{pkt};
         const double now = nowSec();
-        if (currentUrl() != url) return true;
+        if (hd_ != hd0 && mainUrl_ != subUrl_) return true;   // ganti SD<->HD: sambung ulang ke stream lain
         if (pkt->stream_index != in.videoIndex()) continue;
         const bool key = pkt->flags & AV_PKT_FLAG_KEY;
 
