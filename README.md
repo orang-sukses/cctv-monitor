@@ -23,7 +23,9 @@ edit `cameras.json`, lalu klik 2x `CCTVMonitor.exe`.
 ## Tampilan & kontrol
 Gaya V380: sidebar daftar kamera (klik = pilih, klik 2x = perbesar), grid layar 1/4/9/16 dengan halaman, dan toolbar di bawah (layout, halaman, SD/HD, Foto, Rekam, Layar Penuh, total kecepatan internet realtime). Foto/Rekam berlaku untuk kamera yang dipilih, atau semua kamera bila belum ada yang dipilih.
 
-Keyboard: `1`-`9`: perbesar kamera · `0`/`Esc`: kembali ke grid · `←`/`→`: halaman · `R`: rekam (folder `recordings/`, per 10 menit, tanpa re-encode) · `S`: foto (`snapshots/`) · `H`: ganti SD/HD · `F`/`F11`: layar penuh (hanya video; jalankan dengan `--fullscreen` untuk langsung layar penuh) · `Q`: keluar
+**Layar kedua (otomatis)**: bila ada monitor kedua, aplikasi otomatis tampil layar penuh di monitor kedua. Bila hanya 1 monitor, tidak ada otomatisasi (jendela tidak muncul sendiri; buka lewat ikon tray). Tombol **Auto Layar 2: ON/OFF** (toolbar, tombol mengambang saat layar penuh, menu tray, atau tombol `A`) menghidupkan/mematikannya; pilihan disimpan di `settings.ini`. Mencolok/mencabut monitor kedua diterapkan otomatis.
+
+Keyboard: `A`: auto layar 2 · `1`-`9`: perbesar kamera · `0`/`Esc`: kembali ke grid · `←`/`→`: halaman · `R`: rekam (folder `recordings/`, per 10 menit, tanpa re-encode) · `S`: foto (`snapshots/`) · `H`: ganti SD/HD · `F`/`F11`: layar penuh (hanya video; jalankan dengan `--fullscreen` untuk langsung layar penuh) · `Q`: keluar
 
 ## Build sendiri
 - **GitHub Actions**: push ke `main` -> workflow `Build Windows` menghasilkan zip siap pakai.

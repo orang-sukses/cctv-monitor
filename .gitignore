@@ -5,3 +5,5 @@ recordings/
 snapshots/
 *.log
 .DS_Store
+.tools/
+settings.ini

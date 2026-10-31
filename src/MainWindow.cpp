@@ -11,7 +11,14 @@
 #include <QHBoxLayout>
 #include <QKeyEvent>
 #include <QLabel>
+#include <QAction>
+#include <QCoreApplication>
+#include <QGuiApplication>
 #include <QListWidget>
+#include <QMenu>
+#include <QScreen>
+#include <QStyle>
+#include <QSettings>
 #include <QToolButton>
 #include <QVBoxLayout>
 #include <algorithm>
@@ -68,6 +75,34 @@ MainWindow::MainWindow(const AppConfig &cfg) : cfg_(cfg) {
         if (isFullScreen()) setCursor(Qt::BlankCursor);   // kursor hanya disembunyikan saat layar penuh
     });
     hideCursorTimer_.start();
+
+    autoScreen_ = QSettings(QCoreApplication::applicationDirPath() + "/settings.ini", QSettings::IniFormat)
+                      .value("auto_second_screen", true).toBool();
+
+    // Ikon tray: jendela yang disembunyikan (tanpa monitor kedua) tetap bisa dibuka / diatur / ditutup.
+    QIcon trayIcon = windowIcon();
+    if (trayIcon.isNull()) trayIcon = QIcon(QCoreApplication::applicationDirPath() + "/CCTV.ico");
+    if (trayIcon.isNull()) trayIcon = style()->standardIcon(QStyle::SP_ComputerIcon);
+    tray_ = new QSystemTrayIcon(trayIcon, this);
+    tray_->setToolTip("CCTV Monitor");
+    auto *menu = new QMenu(this);
+    menu->addAction("Tampilkan jendela", this, [this] { showNormal(); raise(); activateWindow(); });
+    trayAuto_ = menu->addAction("Otomatis layar kedua", this, [this] { setAutoScreen(!autoScreen_); });
+    trayAuto_->setCheckable(true);
+    menu->addSeparator();
+    menu->addAction("Keluar", this, [this] { close(); });
+    tray_->setContextMenu(menu);
+    connect(tray_, &QSystemTrayIcon::activated, this, [this](QSystemTrayIcon::ActivationReason r) {
+        if (r == QSystemTrayIcon::Trigger) { showNormal(); raise(); activateWindow(); }
+    });
+    tray_->show();
+
+    // Monitor dicolok / dicabut: tunggu sebentar sampai susunan layar stabil, lalu terapkan ulang.
+    screenTimer_.setSingleShot(true);
+    screenTimer_.setInterval(800);
+    connect(&screenTimer_, &QTimer::timeout, this, &MainWindow::applyScreens);
+    connect(qApp, &QGuiApplication::screenAdded, this, [this] { screenTimer_.start(); });
+    connect(qApp, &QGuiApplication::screenRemoved, this, [this] { screenTimer_.start(); });
 
     for (auto *w : workers_) w->start();
 
@@ -174,6 +209,16 @@ void MainWindow::buildUi() {
     tl->addWidget(snap);
     tl->addWidget(recBtn_);
     tl->addWidget(full);
+    autoBtn_ = makeButton("Auto Layar 2", "Otomatis tampil layar penuh di monitor kedua (A)", true);
+    connect(autoBtn_, &QToolButton::clicked, this, [this] { setAutoScreen(!autoScreen_); });
+    tl->addWidget(autoBtn_);
+
+    // Tombol mengambang (tampil saat layar penuh, saat toolbar tersembunyi) di pojok kanan atas.
+    floatBtn_ = makeButton("Auto Layar 2", "Otomatis tampil layar penuh di monitor kedua (A)", true);
+    floatBtn_->setParent(host_);
+    floatBtn_->setStyleSheet("QToolButton{background:rgba(20,23,28,170);} QToolButton:checked{background:rgba(30,136,229,200);}");
+    connect(floatBtn_, &QToolButton::clicked, this, [this] { setAutoScreen(!autoScreen_); });
+    floatBtn_->hide();
 
     tl->addStretch(1);
     usageLabel_ = new QLabel;
@@ -211,13 +256,69 @@ void MainWindow::relayout() {
 }
 
 void MainWindow::applyVisibility() {
-    for (int i = 0; i < int(workers_.size()); ++i) workers_[i]->setVisible(!isMinimized() && shown_[i]);
+    const bool on = isVisible() && !isMinimized();   // tersembunyi (tray) / diminimize: tidak di-render
+    for (int i = 0; i < int(workers_.size()); ++i) workers_[i]->setVisible(on && shown_[i]);
 }
 
 void MainWindow::applyChrome() {
     const bool fs = isFullScreen();   // layar penuh: hanya video
     sidebar_->setVisible(!fs);
     toolbar_->setVisible(!fs);
+    floatBtn_->setVisible(fs);
+    placeFloatBtn();
+}
+
+void MainWindow::placeFloatBtn() {
+    floatBtn_->adjustSize();
+    floatBtn_->move(host_->width() - floatBtn_->width() - 12, 12);
+    floatBtn_->raise();
+}
+
+void MainWindow::resizeEvent(QResizeEvent *e) {
+    QMainWindow::resizeEvent(e);
+    placeFloatBtn();
+}
+
+// Layar kedua: ada -> tampil otomatis layar penuh di sana; tidak ada (1 monitor) -> tidak ada otomatisasi
+// (jendela disembunyikan, tetap berjalan di tray). Otomatisasi mati -> jendela biasa.
+void MainWindow::applyScreens() {
+    if (!autoScreen_) {
+        if (!isVisible()) showNormal();
+        return;
+    }
+    QScreen *second = nullptr;
+    for (QScreen *s : QGuiApplication::screens())
+        if (s != QGuiApplication::primaryScreen()) { second = s; break; }
+    if (!second) {
+        if (isVisible()) hide();
+        return;
+    }
+    if (isVisible() && isFullScreen() && screen() == second) return;   // sudah di tempatnya
+    if (isFullScreen()) showNormal();
+    setScreen(second);
+    if (windowHandle()) windowHandle()->setScreen(second);
+    setGeometry(second->geometry());
+    showFullScreen();
+}
+
+void MainWindow::setAutoScreen(bool on) {
+    autoScreen_ = on;
+    QSettings(QCoreApplication::applicationDirPath() + "/settings.ini", QSettings::IniFormat)
+        .setValue("auto_second_screen", on);
+    applyScreens();
+    refreshUi();
+}
+
+void MainWindow::startup(bool forceFullscreen) {
+    if (qEnvironmentVariable("QT_QPA_PLATFORM") == "offscreen") { resize(1280, 720); show(); return; }
+    if (autoScreen_) {
+        applyScreens();   // 1 monitor: tidak tampil sendiri (buka lewat ikon tray)
+    } else if (forceFullscreen) {
+        showFullScreen();
+    } else {
+        resize(1280, 720);
+        show();
+    }
 }
 
 void MainWindow::refreshUi() {
@@ -241,6 +342,11 @@ void MainWindow::refreshUi() {
     for (int i = 0; i < int(workers_.size()); ++i)
         if ((sel_ < 0 || i == sel_) && workers_[i]->recording()) rec = true;
     recBtn_->setChecked(rec);
+    for (auto *b : {autoBtn_, floatBtn_}) {
+        b->setChecked(autoScreen_);
+        b->setText(autoScreen_ ? "Auto Layar 2: ON" : "Auto Layar 2: OFF");
+    }
+    trayAuto_->setChecked(autoScreen_);
 
     const QString usage = QString("Internet realtime: %1 Mbps (terima / read)").arg(kbps / 1000.0, 0, 'f', 2);
     usageLabel_->setText(usage);
@@ -344,6 +450,8 @@ void MainWindow::keyPressEvent(QKeyEvent *e) {
         snapshot();
     } else if (k == Qt::Key_H) {
         toggleHd();
+    } else if (k == Qt::Key_A) {
+        setAutoScreen(!autoScreen_);
     } else if (k == Qt::Key_Left || k == Qt::Key_PageUp) {
         changePage(-1);
     } else if (k == Qt::Key_Right || k == Qt::Key_PageDown) {

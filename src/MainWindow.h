@@ -3,9 +3,11 @@
 
 #include <QMainWindow>
 #include <QTimer>
+#include <QSystemTrayIcon>
 #include <algorithm>
 #include <vector>
 
+class QAction;
 class CameraView;
 class CameraWorker;
 class QButtonGroup;
@@ -23,10 +25,16 @@ public:
     explicit MainWindow(const AppConfig &cfg);
     ~MainWindow() override;
 
+    // Tampilan awal: otomatis ke monitor kedua (layar penuh) bila ada; tanpa monitor kedua jendela disembunyikan.
+    void startup(bool forceFullscreen);
+
 protected:
     void keyPressEvent(QKeyEvent *) override;
     void changeEvent(QEvent *) override;
     void mouseMoveEvent(QMouseEvent *) override { showCursor(); }
+    void showEvent(QShowEvent *) override { applyVisibility(); }
+    void hideEvent(QHideEvent *) override { applyVisibility(); }
+    void resizeEvent(QResizeEvent *) override;
 
 private:
     void buildUi();
@@ -45,6 +53,9 @@ private:
     void toggleFullscreen();
     void snapshot();
     void showCursor();
+    void applyScreens();
+    void setAutoScreen(bool on);
+    void placeFloatBtn();
 
     AppConfig cfg_;
     QWidget *host_ = nullptr, *sidebar_ = nullptr, *toolbar_ = nullptr;
@@ -58,5 +69,9 @@ private:
     std::vector<CameraView *> views_;
     std::vector<bool> shown_;
     int layout_ = 1, page_ = 0, sel_ = -1, solo_ = -1;   // sel_/solo_: -1 = tidak ada
-    QTimer hideCursorTimer_;
+    QTimer hideCursorTimer_, screenTimer_;
+    bool autoScreen_ = true;   // otomatisasi layar kedua (disimpan di settings.ini)
+    QToolButton *autoBtn_ = nullptr, *floatBtn_ = nullptr;
+    QSystemTrayIcon *tray_ = nullptr;
+    QAction *trayAuto_ = nullptr;
 };
