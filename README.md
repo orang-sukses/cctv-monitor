@@ -17,7 +17,7 @@ edit `cameras.json`, lalu klik 2x `CCTVMonitor.exe`.
 - `hwaccel`: decode GPU (D3D11VA), otomatis fallback ke CPU
 - `overlay` (opsional): tampilan teks nama/status kamera — `position` ("bottom"/"top"), `font`, `size`, `bold`, `name_color`, `live_color`, `warn_color` (warna hex), `bar_opacity` (0-255), `show_name`, `show_status`
 - `quality`: `"sd"` (default, memakai `sub_url`, atau `url` bila kosong) atau `"hd"` (memakai `url` utama); bisa diganti saat berjalan dengan tombol `H`
-- `sub_url` (opsional): stream ringan untuk mode SD
+- `sub_url` (opsional): stream ringan untuk mode SD (sekitar setengah HD, hemat internet). Bila kosong dan `url` berakhiran `/ch0`, otomatis memakai `/ch1`
 - Overlay tiap kamera menampilkan fps dan kecepatan (kbps) kamera itu; toolbar dan judul jendela menampilkan total kecepatan internet realtime semua kamera (mis. 3 kamera x 500 kbps = 1,50 Mbps) dan mode SD/HD
 
 ## Tampilan & kontrol

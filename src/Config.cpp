@@ -39,7 +39,11 @@ bool AppConfig::load(const QString &path, AppConfig &out, QString &error) {
     for (const QJsonValue &v : o["cameras"].toArray()) {
         const QJsonObject c = v.toObject();
         if (c["url"].toString().isEmpty()) continue;
-        out.cameras.push_back({c["name"].toString(), c["url"].toString(), c["sub_url"].toString()});
+        const QString url = c["url"].toString();
+        QString sub = c["sub_url"].toString();
+        // Tanpa sub_url: turunkan otomatis dari pola ".../ch0" -> ".../ch1" (sub-stream, ~setengah HD).
+        if (sub.isEmpty() && url.endsWith("/ch0")) sub = url.left(url.size() - 1) + "1";
+        out.cameras.push_back({c["name"].toString(), url, sub});
     }
     if (out.cameras.empty()) {
         error = "Tidak ada kamera di cameras.json";
