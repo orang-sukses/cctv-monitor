@@ -33,7 +33,14 @@ jobs:
         shell: pwsh
         run: |
           cmake -S . -B build -A x64 -DFFMPEG_ROOT="$env:FFMPEG_ROOT"
-          cmake --build build --config Release
+          $out = cmake --build build --config Release 2>&1 | Out-String
+          $code = $LASTEXITCODE
+          Write-Host $out
+          if ($code -ne 0) {
+            $out -split "`r?`n" | Where-Object { $_ -match 'error|Error' } | Select-Object -First 15 |
+              ForEach-Object { Write-Host ("::error::" + ($_ -replace '[\r\n%]', ' ').Trim()) }
+            exit $code
+          }
 
       - name: Paketkan
         shell: pwsh
