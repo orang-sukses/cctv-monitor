@@ -15,7 +15,7 @@
     {"name": "CAM 07 - Kamera 13",      "url": "rtsp://admin:@192.168.1.13:554/live/ch0", "sub_url": "rtsp://admin:@192.168.1.13:554/live/ch1"},
     {"name": "CAM 08 - Ruang Cuci", "url": "rtsp://admin:@192.168.1.11:554/live/ch0", "sub_url": "rtsp://admin:@192.168.1.11:554/live/ch1"},
     {"name": "CAM 09 - Ruang Produksi", "url": "rtsp://admin:@192.168.1.6:554/live/ch0", "sub_url": "rtsp://admin:@192.168.1.6:554/live/ch1"},
-    {"name": "CAM 10 - Kamera 8",      "url": "rtsp://admin:@192.168.1.8:554/live/ch0", "sub_url": "rtsp://admin:@192.168.1.8:554/live/ch1"},
+    {"name": "CAM 10 - Ruang Dingin","url": "rtsp://admin:@192.168.1.8:554/live/ch0", "sub_url": "rtsp://admin:@192.168.1.8:554/live/ch1"},
     {"name": "CAM 11 - Kamera 9",      "url": "rtsp://admin:@192.168.1.9:554/live/ch0", "sub_url": "rtsp://admin:@192.168.1.9:554/live/ch1"},
     {"name": "CAM 12 - Kamera 15",      "url": "rtsp://admin:@192.168.1.15:554/live/ch0", "sub_url": "rtsp://admin:@192.168.1.15:554/live/ch1"}
   ]
